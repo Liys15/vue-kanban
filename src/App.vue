@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CARD_TITLE } from "./const";
 import type { ActivityInterface } from "./types"
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useStorage } from '@vueuse/core'
 import EventInput from './components/EventInput.vue';
 import TaskCard from './components/TaskCard.vue';
@@ -17,7 +17,14 @@ const storeData: ActivityInterface[] = [
   }
 ];
 
-const store = useStorage('kanban-data', storeData)
+const store = useStorage('kanban-data', storeData);
+const drag = false;
+const dragOptions = computed(() => {
+  return {
+    group: "activities",
+    ghostClass: "ghost",
+  }
+})
 
 const activedActivity = computed(() => {
   const actNum: number = store.value.findIndex(item => item.isActived)
@@ -63,15 +70,16 @@ function removeActivity() {
     />
     <draggable
       class="list-group-act"
-      :list="store"
-      group="activities"
+      v-model="store"
+      v-bind="dragOptions"
+      item-key="activityName"
     >
       <template #item="{ element, index }">
-        <div
+        <li
           class="list-group-item"
           :class="{ active: element.isActived }"
           @click="handleClick(index)"
-        >{{ element.activityName }}</div>
+        >{{ element.activityName }}</li>
       </template>
     </draggable>
   </div>
@@ -85,7 +93,7 @@ function removeActivity() {
         v-for="(item, idx) in CARD_TITLE"
         :title="item"
         :taskClassNum="idx"
-        :act="store[activedActivity]"
+        :act="store[activedActivity >= 0 ? activedActivity : 0]"
       > </TaskCard>
     </div>
   </div>
@@ -178,5 +186,24 @@ function removeActivity() {
     }
 
   }
+}
+
+.act-list-move,
+/* 对移动中的元素应用的过渡 */
+.act-list-enter-active,
+.act-list-leave-active {
+  transition: all 2s ease;
+}
+
+.act-list-enter-from,
+.act-list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* 确保将离开的元素从布局流中删除
+  以便能够正确地计算移动的动画。 */
+.act-list-leave-active {
+  position: absolute;
 }
 </style>

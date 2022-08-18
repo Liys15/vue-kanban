@@ -2,8 +2,11 @@
 import EventInput from './EventInput.vue';
 import { Card_Alias } from "../const";
 import type { todoItemInterface } from "../types"
+import { ref } from 'vue'
+import draggable from 'vuedraggable'
 
 const props = defineProps(['title', 'taskClassNum', 'act'])
+const drag = ref(false)
 
 function addTodo(todo: todoItemInterface) {
     props.act[Card_Alias[props.taskClassNum]].push(todo)
@@ -19,12 +22,19 @@ function addTodo(todo: todoItemInterface) {
             placeholder="标题 : 描述"
             @inputTodo="addTodo"
         />
-        <ul>
-            <li v-for="(item) in act[Card_Alias[taskClassNum]]">
-                <div class="todo-title">{{ item.title }}</div>
-                <div class="description">{{ item.description }}</div>
-            </li>
-        </ul>
+        <draggable
+            class="list-group"
+            v-model="act[Card_Alias[taskClassNum]]"
+            group="todo"
+            item-key="title"
+        >
+            <template #item="{ element }">
+                <div class="list-group-item">
+                    <div class="todo-title">{{ element.title }}</div>
+                    <div class="description">{{ element.description }}</div>
+                </div>
+            </template>
+        </draggable>
     </div>
 </template>
 
@@ -47,41 +57,52 @@ function addTodo(todo: todoItemInterface) {
         margin-bottom: 20px;
     }
 
-    li {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        background-color: #fff;
-        margin-top: 15px;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.3);
-        min-height: 50px;
-        padding: 0px 10px 10px;
-        font-family: Roboto, sans-serif;
-        text-align: left;
+    .list-group {
+        min-height: 30px;
 
-        .todo-title {
-            margin: 8px 0;
-            font-size: 20px;
-            line-height: 22px;
-            font-weight: 300;
+        .list-group-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: #fff;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            min-height: 50px;
+            padding: 0px 10px 10px;
+            font-family: Roboto, sans-serif;
+            text-align: left;
 
-            &:before {
-                content: "\2022"; //圆点
-                color: #E8693D; //颜色 
-                font-size: 24px; //大小
-                margin-right: 5px;
+            &:hover {
+                background-color: #F2F7FA;
+                cursor: grab;
+            }
+
+            .todo-title {
+                margin: 8px 0;
+                font-size: 20px;
+                line-height: 22px;
+                font-weight: 300;
+
+                &:before {
+                    content: "\2022"; //圆点
+                    color: #E8693D; //颜色 
+                    font-size: 24px; //大小
+                    margin-right: 5px;
+                }
+            }
+
+            .description {
+                width: 100%;
+                font-size: 18px;
+                color: #9c9c9c;
+                text-indent: 12px;
+                word-break: break-all;
             }
         }
-
-        .description {
-            width: 100%;
-            font-size: 18px;
-            color: #9c9c9c;
-            text-indent: 12px;
-            word-break: break-all;
-        }
     }
+
+
 }
 </style>
