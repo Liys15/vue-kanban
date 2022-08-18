@@ -56,7 +56,8 @@ button:hover {
 
 button:focus,
 button:focus-visible {
-    outline: 4px auto #ca3e47;
+    /* outline: 4px auto #ca3e47; */
+    outline: none;
 }
 
 .card {

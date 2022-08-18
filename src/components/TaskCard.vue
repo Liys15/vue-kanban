@@ -12,6 +12,9 @@ function addTodo(todo: todoItemInterface) {
     props.act[Card_Alias[props.taskClassNum]].push(todo)
 }
 
+function deleteTodo(idx: number) {
+    props.act[Card_Alias[props.taskClassNum]].splice(idx, 1)
+}
 </script>
 
 <template>
@@ -28,10 +31,16 @@ function addTodo(todo: todoItemInterface) {
             group="todo"
             item-key="title"
         >
-            <template #item="{ element }">
+            <template #item="{ element, index }">
                 <div class="list-group-item">
                     <div class="todo-title">{{ element.title }}</div>
                     <div class="description">{{ element.description }}</div>
+                    <div class="button-container">
+                        <button
+                            class="delete-todo-btn"
+                            @click="deleteTodo(index)"
+                        ></button>
+                    </div>
                 </div>
             </template>
         </draggable>
@@ -77,6 +86,15 @@ function addTodo(todo: todoItemInterface) {
             &:hover {
                 background-color: #F2F7FA;
                 cursor: grab;
+
+                .button-container {
+                    .delete-todo-btn {
+                        background-color: #ca3e47;
+                        width: 40px;
+                        height: 10px;
+                    }
+                }
+
             }
 
             .todo-title {
@@ -99,6 +117,23 @@ function addTodo(todo: todoItemInterface) {
                 color: #9c9c9c;
                 text-indent: 12px;
                 word-break: break-all;
+            }
+
+            .button-container {
+                min-height: 4px;
+                width: 100%;
+                position: relative;
+
+                .delete-todo-btn {
+                    background-color: #9c9c9c;
+                    padding: 0px;
+                    border: none;
+                    width: 20px;
+                    height: 4px;
+                    float: right;
+                    transition: all 0.6s;
+
+                }
             }
         }
     }
